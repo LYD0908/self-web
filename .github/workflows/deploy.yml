@@ -36,8 +36,11 @@ jobs:
       - name: 构建站点 + 生成搜索索引
         run: npm run build
         env:
-          SITE_URL: ${{ vars.SITE_URL }}
-          BASE_PATH: ${{ vars.BASE_PATH }}
+          # 默认值已按 LYD0908/self-web 写死；想换域名/仓库名时，
+          # 到仓库 Settings → Secrets and variables → Actions → Variables
+          # 添加 SITE_URL / BASE_PATH 覆盖即可，不必改这个文件
+          SITE_URL: ${{ vars.SITE_URL || 'https://lyd0908.github.io' }}
+          BASE_PATH: ${{ vars.BASE_PATH || '/self-web' }}
 
       - name: 配置 Pages
         uses: actions/configure-pages@v5

@@ -118,7 +118,7 @@ export const SOCIALS = [
  */
 export const COMMENT = {
   enabled: false,
-  repo: 'yourname/yourname.github.io',
+  repo: 'LYD0908/self-web',
   repoId: '',
   category: 'Announcements',
   categoryId: '',
@@ -133,14 +133,22 @@ export const SPONSOR = {
   tip: '如果文章对你有帮助，欢迎请我喝杯咖啡 ☕',
 };
 
-/** 友链数据 */
-export const FRIEND_LINKS = [
-  {
-    name: '示例好友',
-    url: 'https://example.com',
-    desc: '这是一个友链示例，删掉换成你自己的',
-    avatar: '',
-  },
+/**
+ * 友链数据（现在是空的，页面会自动显示空状态）
+ * avatar 留空则显示名字首字的色块；有头像就填图片地址
+ */
+export const FRIEND_LINKS: {
+  name: string;
+  url: string;
+  desc: string;
+  avatar?: string;
+}[] = [
+  // {
+  //   name: '好友名字',
+  //   url: 'https://example.com',
+  //   desc: '一句话介绍',
+  //   avatar: '',
+  // },
 ];
 
 /** 项目作品集数据 */

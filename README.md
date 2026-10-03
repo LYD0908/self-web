@@ -53,7 +53,7 @@ draft: false
 ---
 ```
 
-正文正常写 Markdown 即可。两篇占位文章（`hello-world.md`、`why-i-write.md`）可以直接删掉，删掉后列表页会自动显示空状态。
+正文正常写 Markdown 即可。
 
 ### 4. 配色 —— `src/styles/global.css`
 
@@ -61,16 +61,33 @@ draft: false
 
 ## 部署到 GitHub Pages
 
-1. 在 GitHub 建仓库，把代码推上去
-2. 仓库 **Settings → Pages → Source** 选 **GitHub Actions**
-3. 如果仓库名**不是** `<用户名>.github.io`，需要配置 base path：
-   - 在仓库 **Settings → Secrets and variables → Actions → Variables** 里新建变量
-     - `SITE_URL` = `https://<用户名>.github.io`
-     - `BASE_PATH` = `/<仓库名>`（比如 `/blog`）
-   - 或者直接在项目根目录建 `.env` 文件（本地生效），参考 `.env.example`
-4. 推到 `main` 分支即自动构建部署
+当前仓库：`LYD0908/self-web`，线上地址 **https://lyd0908.github.io/self-web/**
 
-工作流文件：`.github/workflows/deploy.yml`
+首次上线需要在 GitHub 上做**一次**设置：
+
+1. 仓库 **Settings → Pages → Source** 选 **GitHub Actions**
+2. 推代码到 `main` 分支，Actions 自动构建部署
+
+### 推送命令
+
+```bash
+git add -A
+git commit -m "你的提交说明"
+git push -u origin main
+```
+
+推完到仓库的 **Actions** 标签页看构建进度，绿色即成功。首次部署要先跑通一次，Pages 地址才会生效。
+
+### 换仓库名 / 换域名时
+
+`astro.config.mjs` 里的 `site` / `base` 默认值写的是 `self-web`。要改有两种方式，推荐第一种（不用改代码）：
+
+- 仓库 **Settings → Secrets and variables → Actions → Variables** 新建：
+  - `SITE_URL` = `https://<用户名>.github.io`
+  - `BASE_PATH` = `/<仓库名>`
+- 或直接改 `astro.config.mjs` 顶部那两行的默认值
+
+工作流文件：`.github/workflows/deploy.yml`（已内置默认值，不配变量也能跑）
 
 ## 开启评论（Giscus）
 

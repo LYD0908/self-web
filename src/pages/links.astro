@@ -10,9 +10,7 @@ import { FRIEND_LINKS, SPONSOR } from '../consts';
       <span class="text-gradient">友链</span>
     </h1>
     <p class="mb-10 text-sm text-ink-muted">
-      在 <code class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]"
-        >src/consts.ts</code
-      > 的 FRIEND_LINKS 里增删。
+      一些我常逛的地方，以及互相串门的朋友。
     </p>
 
     <div class="grid gap-4 sm:grid-cols-2">
@@ -48,6 +46,16 @@ import { FRIEND_LINKS, SPONSOR } from '../consts';
         ))
       }
     </div>
+
+    {
+      FRIEND_LINKS.length === 0 && (
+        <div class="card border-dashed bg-transparent p-10 text-center shadow-none">
+          <p class="text-sm text-ink-muted">
+            这里还空着 —— 如果你是第一个，欢迎来找我交换。
+          </p>
+        </div>
+      )
+    }
 
     <!-- 打赏 -->
     <section class="mt-12">
