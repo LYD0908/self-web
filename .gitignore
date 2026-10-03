@@ -3,6 +3,9 @@ dist/
 .output/
 .astro/
 
+# 本地记忆 / 工作笔记（含私人信息，不进公开仓库）
+.workbuddy/
+
 # 依赖
 node_modules/
 

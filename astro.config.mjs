@@ -15,8 +15,9 @@ import tailwindcss from '@tailwindcss/vite';
 //   BASE_PATH=/
 // ---------------------------------------------------------------------------
 
-const site = process.env.SITE_URL || 'https://duoduoge.github.io';
-const base = process.env.BASE_PATH || '/';
+// 仓库 LYD0908/self-web → Pages 地址 https://lyd0908.github.io/self-web/
+const site = process.env.SITE_URL || 'https://lyd0908.github.io';
+const base = process.env.BASE_PATH || '/self-web';
 
 export default defineConfig({
   site,
