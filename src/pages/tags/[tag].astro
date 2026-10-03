@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts, readingTime, collectTags } from '../../utils/posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  const tags = collectTags(posts);
+  return tags.map(({ tag }) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .map((p) => ({
+          slug: p.slug,
+          data: p.data,
+          readingTime: readingTime(p.body || ''),
+        })),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, posts } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={`#${tag}`} description={`标签「${tag}」下的全部文章。`}>
+  <div class="mx-auto max-w-6xl px-5 py-12">
+    <a
+      href={`${base}/tags/`}
+      class="mb-6 inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink-strong"
+    >
+      <Icon name="arrowLeft" class="h-4 w-4" />
+      全部标签
+    </a>
+
+    <h1 class="mb-2 text-3xl font-black text-ink-strong">
+      <span class="text-gradient">#{tag}</span>
+    </h1>
+    <p class="mb-10 text-sm text-ink-muted">共 {posts.length} 篇文章</p>
+
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {posts.map((p) => <PostCard post={p} />)}
+    </div>
+  </div>
+</BaseLayout>

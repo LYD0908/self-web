@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="搜索" description="站内全文搜索。">
+  <div class="mx-auto max-w-3xl px-5 py-12">
+    <h1 class="mb-2 text-3xl font-black text-ink-strong sm:text-4xl">
+      <span class="text-gradient">搜索</span>
+    </h1>
+    <p class="mb-8 text-sm text-ink-muted">
+      基于 Pagefind 的全文搜索。索引在 <code
+        class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]">npm run build</code
+      > 时生成。
+    </p>
+
+    <!-- 搜索框 -->
+    <div class="card relative flex items-center gap-3 px-5 py-4">
+      <Icon name="search" class="h-5 w-5 shrink-0 text-ink-muted" />
+      <input
+        id="search-input"
+        type="search"
+        autocomplete="off"
+        placeholder="输入关键词，回车搜索…"
+        class="w-full bg-transparent text-[15px] text-ink-strong outline-none placeholder:text-ink-muted/70"
+      />
+      <kbd
+        class="hidden shrink-0 rounded border border-line bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted sm:block"
+        >Enter</kbd
+      >
+    </div>
+
+    <!-- 状态 / 结果 -->
+    <div id="search-status" class="mt-6 text-sm text-ink-muted"></div>
+    <div id="search-results" class="mt-4 space-y-3"></div>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ base }}>
+  (function () {
+    const input = document.getElementById('search-input');
+    const status = document.getElementById('search-status');
+    const results = document.getElementById('search-results');
+    if (!input || !status || !results) return;
+
+    let pagefind = null;
+    let loading = false;
+
+    async function loadPagefind() {
+      if (pagefind || loading) return pagefind;
+      loading = true;
+      status.textContent = '正在加载索引…';
+      try {
+        const url = (base || '') + '/pagefind/pagefind.js';
+        pagefind = await import(/* @vite-ignore */ url);
+        if (pagefind.options) {
+          pagefind.options({ basePath: base || '/' });
+        }
+        status.textContent = '';
+      } catch (e) {
+        status.innerHTML =
+          '索引还没生成。先执行 <code class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]">npm run build</code>，再用 <code class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]">npm run preview</code> 查看。';
+        pagefind = null;
+      }
+      loading = false;
+      return pagefind;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[c]);
+    }
+
+    function highlight(meta) {
+      // Pagefind 返回的 excerpt 已包含 <mark>，此处只做安全转义之外的透传
+      return meta.excerpt || '';
+    }
+
+    async function run(query) {
+      const q = query.trim();
+      results.innerHTML = '';
+      if (!q) {
+        status.textContent = '';
+        return;
+      }
+
+      const pf = await loadPagefind();
+      if (!pf) return;
+
+      status.textContent = '搜索中…';
+      const search = await pf.search(q);
+      if (!search.results.length) {
+        status.textContent = `没有找到与「${q}」相关的内容。`;
+        return;
+      }
+
+      status.textContent = `找到 ${search.results.length} 条结果`;
+      const data = await Promise.all(search.results.slice(0, 20).map((r) => r.data()));
+
+      results.innerHTML = data
+        .map((d) => {
+          const url = (base || '') + d.url.replace(/\.html$/, '').replace(/\/$/, '') + '/';
+          const title = escapeHtml(d.meta?.title || d.url);
+          return `<a href="${url}" class="card card-hover block p-5">
+            <div class="flex items-center gap-2 text-base font-bold text-ink-strong">${title}</div>
+            <div class="mt-1.5 text-sm leading-relaxed text-ink-muted">${highlight(d.meta)}</div>
+          </a>`;
+        })
+        .join('');
+    }
+
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => run(input.value), 260);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        clearTimeout(timer);
+        run(input.value);
+      }
+    });
+
+    // 支持 /search?q=xxx
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q) {
+      input.value = q;
+      run(q);
+    } else {
+      loadPagefind();
+    }
+  })();
+</script>

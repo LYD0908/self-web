@@ -1,0 +1,469 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   马卡龙设计系统
+   配色基调：樱花粉 / 薰衣草紫 / 薄荷绿 / 奶油黄 / 天空蓝
+   深浅色双主题，通过 <html class="dark"> 切换
+   ========================================================================== */
+
+:root {
+  /* —— 马卡龙主色（两种主题下保持一致）—— */
+  --macaron-pink: #ffb3c6;
+  --macaron-pink-soft: #ffe1e9;
+  --macaron-purple: #c4a7f7;
+  --macaron-purple-soft: #ece2ff;
+  --macaron-mint: #9fe6cf;
+  --macaron-mint-soft: #dcf7ee;
+  --macaron-blue: #a8d5ff;
+  --macaron-blue-soft: #e0f0ff;
+  --macaron-yellow: #ffe1a8;
+  --macaron-yellow-soft: #fff5e0;
+
+  /* —— 语义色（浅色模式）—— */
+  --bg: #fffaf8;
+  --bg-soft: #fff4f1;
+  --surface: #ffffff;
+  --surface-2: #fff6f4;
+  --border: #f0e2e6;
+  --text: #3d3340;
+  --text-strong: #241d28;
+  --text-muted: #8a7f8d;
+  --shadow-color: 226 200 210;
+
+  /* 渐变 */
+  --grad-1: linear-gradient(
+    135deg,
+    var(--macaron-pink) 0%,
+    var(--macaron-purple) 50%,
+    var(--macaron-blue) 100%
+  );
+  --grad-2: linear-gradient(
+    135deg,
+    var(--macaron-mint) 0%,
+    var(--macaron-blue) 100%
+  );
+}
+
+.dark {
+  --bg: #171320;
+  --bg-soft: #1d1828;
+  --surface: #221c30;
+  --surface-2: #2a2338;
+  --border: #3a3150;
+  --text: #ddd3e6;
+  --text-strong: #f6f0fa;
+  --text-muted: #9a8faa;
+  --shadow-color: 0 0 0;
+}
+
+/* 把语义色挂到 Tailwind 上 */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-ink-strong: var(--text-strong);
+  --color-ink-muted: var(--text-muted);
+
+  --color-m-pink: var(--macaron-pink);
+  --color-m-purple: var(--macaron-purple);
+  --color-m-mint: var(--macaron-mint);
+  --color-m-blue: var(--macaron-blue);
+  --color-m-yellow: var(--macaron-yellow);
+
+  --font-sans: 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei',
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SFMono-Regular',
+    Menlo, Consolas, monospace;
+}
+
+/* ==========================================================================
+   基础
+   ========================================================================== */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+::selection {
+  background: var(--macaron-pink);
+  color: #3d3340;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--macaron-purple);
+  border-radius: 99px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--macaron-pink);
+}
+
+/* ==========================================================================
+   通用组件类
+   ========================================================================== */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -6px rgb(var(--shadow-color) / 0.5);
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px -10px rgb(var(--shadow-color) / 0.75);
+  border-color: var(--macaron-purple);
+}
+
+.text-gradient {
+  background: var(--grad-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+.chip:hover {
+  color: var(--text-strong);
+  border-color: var(--macaron-purple);
+  background: var(--macaron-purple-soft);
+}
+.dark .chip:hover {
+  background: color-mix(in srgb, var(--macaron-purple) 22%, transparent);
+}
+
+/* 马卡龙色 chip 变体 */
+.chip-pink {
+  background: var(--macaron-pink-soft);
+  border-color: var(--macaron-pink);
+  color: #8c4a5e;
+}
+.chip-purple {
+  background: var(--macaron-purple-soft);
+  border-color: var(--macaron-purple);
+  color: #6b4a9c;
+}
+.chip-mint {
+  background: var(--macaron-mint-soft);
+  border-color: var(--macaron-mint);
+  color: #2f7a63;
+}
+.chip-blue {
+  background: var(--macaron-blue-soft);
+  border-color: var(--macaron-blue);
+  color: #2f6690;
+}
+.chip-yellow {
+  background: var(--macaron-yellow-soft);
+  border-color: var(--macaron-yellow);
+  color: #8a6a1f;
+}
+.dark .chip-pink,
+.dark .chip-purple,
+.dark .chip-mint,
+.dark .chip-blue,
+.dark .chip-yellow {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.35rem;
+  border-radius: 99px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--macaron-purple);
+  color: var(--text-strong);
+}
+.btn-primary {
+  background: var(--grad-1);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px -6px rgb(196 167 247 / 0.9);
+}
+.btn-primary:hover {
+  color: #fff;
+  box-shadow: 0 10px 26px -8px rgb(196 167 247 / 1);
+}
+
+/* ==========================================================================
+   文章正文排版（.prose）
+   ========================================================================== */
+
+.prose {
+  color: var(--text);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  word-break: break-word;
+}
+.prose > * + * {
+  margin-top: 1.15em;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--text-strong);
+  font-weight: 700;
+  line-height: 1.35;
+  scroll-margin-top: 6rem;
+}
+.prose h1 {
+  font-size: 1.85rem;
+  margin-top: 2em;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2em;
+  padding-left: 0.7rem;
+  border-left: 4px solid var(--macaron-purple);
+}
+.prose h3 {
+  font-size: 1.22rem;
+  margin-top: 1.7em;
+}
+.prose h4 {
+  font-size: 1.05rem;
+  margin-top: 1.5em;
+}
+.prose a {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--macaron-pink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+.prose a:hover {
+  background: var(--macaron-pink-soft);
+  text-decoration-color: var(--macaron-purple);
+}
+.dark .prose a:hover {
+  background: color-mix(in srgb, var(--macaron-pink) 20%, transparent);
+}
+.prose strong {
+  color: var(--text-strong);
+  font-weight: 650;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose ul {
+  list-style: none;
+}
+.prose ul > li {
+  position: relative;
+  padding-left: 0.2em;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1em;
+  top: 0.72em;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--macaron-purple);
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose ol > li::marker {
+  color: var(--macaron-pink);
+  font-weight: 600;
+}
+.prose blockquote {
+  padding: 0.9em 1.2em;
+  border-left: 4px solid var(--macaron-mint);
+  border-radius: 0 0.8rem 0.8rem 0;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-style: normal;
+}
+.prose blockquote > * + * {
+  margin-top: 0.6em;
+}
+.prose hr {
+  border: none;
+  height: 2px;
+  background: var(--grad-2);
+  opacity: 0.5;
+  border-radius: 2px;
+  margin: 2.5em 0;
+}
+.prose img {
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  max-width: 100%;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  font-size: 0.94rem;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.9rem;
+  text-align: left;
+}
+.prose th {
+  background: var(--surface-2);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 0.15em 0.42em;
+  border-radius: 0.4rem;
+  background: var(--macaron-purple-soft);
+  color: #6b4a9c;
+}
+.dark .prose code {
+  background: color-mix(in srgb, var(--macaron-purple) 20%, transparent);
+  color: var(--macaron-purple);
+}
+.prose pre {
+  padding: 1.1rem 1.3rem;
+  border-radius: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   动画
+   ========================================================================== */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+.animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.caret::after {
+  content: '|';
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  color: var(--macaron-pink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

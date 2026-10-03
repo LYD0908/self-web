@@ -1,0 +1,46 @@
+---
+import Icon from './Icon.astro';
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="btn !px-2.5 !py-2.5"
+  aria-label="切换深浅色主题"
+  title="切换深浅色主题"
+>
+  <Icon name="sun" class="hidden h-[18px] w-[18px] dark:block" />
+  <Icon name="moon" class="block h-[18px] w-[18px] dark:hidden" />
+</button>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    function apply(theme) {
+      root.classList.toggle('dark', theme === 'dark');
+      root.dataset.theme = theme;
+      try {
+        localStorage.setItem('theme', theme);
+      } catch (e) {}
+    }
+
+    btn &&
+      btn.addEventListener('click', () => {
+        const next = root.classList.contains('dark') ? 'light' : 'dark';
+        apply(next);
+      });
+
+    // 跟随系统（仅在用户从未手动选择过时）
+    window
+      .matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', (e) => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch (err) {}
+        if (!saved) apply(e.matches ? 'dark' : 'light');
+      });
+  })();
+</script>

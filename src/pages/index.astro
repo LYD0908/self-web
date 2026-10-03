@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import PostCard from '../components/PostCard.astro';
+import Icon from '../components/Icon.astro';
+import { SITE, NAV_ITEMS, CATEGORIES } from '../consts';
+import { getPosts, readingTime } from '../utils/posts';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const all = await getPosts();
+const recent = all.slice(0, 4).map((p) => ({
+  ...p,
+  readingTime: readingTime(p.body || ''),
+}));
+---
+
+<BaseLayout fluid={true} showNav={false} showFooter={false}>
+  <!-- 首屏 -->
+  <Hero />
+
+  <!-- 主屏 -->
+  <section id="main-screen" class="relative px-6 pb-24">
+    <div class="mx-auto max-w-6xl">
+      <div class="mb-10 flex flex-col items-center gap-2 text-center">
+        <span
+          class="text-[11px] font-semibold tracking-[0.3em] text-ink-muted uppercase"
+          >MENU</span
+        >
+        <h2 class="text-2xl font-bold text-ink-strong sm:text-3xl">
+          从这里开始逛
+        </h2>
+      </div>
+
+      <!-- 导航卡片（simonaking 风格的主屏格子） -->
+      <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+        {
+          NAV_ITEMS.map((item, i) => (
+            <a
+              href={`${base}${item.href}`}
+              class="card card-hover group flex flex-col items-center gap-3 p-6 text-center animate-fade-up"
+              style={`animation-delay:${i * 80}ms`}
+            >
+              <span
+                class="grid h-14 w-14 place-items-center rounded-2xl text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
+                style={`background: var(--grad-${(i % 2) + 1})`}
+              >
+                <Icon name={item.icon} class="h-6 w-6" />
+              </span>
+              <span class="text-base font-bold text-ink-strong">
+                {item.label}
+              </span>
+              <span class="text-xs leading-relaxed text-ink-muted">
+                {item.desc}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <!-- 板块快捷入口 -->
+      <div class="mt-14 flex flex-col items-center gap-4">
+        <h3 class="text-sm font-semibold tracking-[0.2em] text-ink-muted uppercase">
+          内容板块
+        </h3>
+        <div class="flex flex-wrap justify-center gap-2.5">
+          {
+            CATEGORIES.map((c) => (
+              <a
+                href={`${base}/categories/${c.id}/`}
+                class={`chip chip-${c.color} !px-4 !py-1.5 !text-[13px]`}
+              >
+                <Icon name={c.icon} class="h-3.5 w-3.5" />
+                {c.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- 最新文章 -->
+      {
+        recent.length > 0 && (
+          <div class="mt-16">
+            <div class="mb-6 flex items-end justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-ink-strong">最新文章</h3>
+                <p class="mt-1 text-sm text-ink-muted">
+                  共 {all.length} 篇，持续更新中
+                </p>
+              </div>
+              <a
+                href={`${base}/blog/`}
+                class="group inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink-strong"
+              >
+                查看全部
+                <Icon
+                  name="arrowRight"
+                  class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                />
+              </a>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              {recent.map((p) => (
+                <PostCard post={p} />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <!-- 空状态 -->
+      {
+        recent.length === 0 && (
+          <div class="card mt-16 border-dashed bg-transparent p-12 text-center shadow-none">
+            <Icon name="pen" class="mx-auto mb-3 h-8 w-8 text-ink-muted" />
+            <p class="text-sm text-ink-muted">
+              还没有文章。往{' '}
+              <code class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]">
+                src/content/blog/
+              </code>{' '}
+              里丢一个 .md 文件就会出现在这里。
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- 首页底部信息 -->
+  <div class="border-t border-line bg-bg-soft/60 py-8">
+    <div
+      class="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-2 px-5 text-xs text-ink-muted"
+    >
+      <span>© {new Date().getFullYear()} {SITE.name}</span>
+      <a href={`${base}/rss.xml`} class="hover:text-ink-strong">RSS</a>
+      <a href={`${base}/links`} class="hover:text-ink-strong">友链</a>
+    </div>
+  </div>
+</BaseLayout>

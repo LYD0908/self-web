@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { CATEGORIES } from '../../consts';
+import { getPosts } from '../../utils/posts';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const posts = await getPosts();
+const counts = CATEGORIES.map((c) => ({
+  ...c,
+  count: posts.filter((p) => p.data.category === c.id).length,
+}));
+---
+
+<BaseLayout title="板块" description="按内容板块浏览文章。">
+  <div class="mx-auto max-w-5xl px-5 py-12">
+    <h1 class="mb-2 text-3xl font-black text-ink-strong sm:text-4xl">
+      <span class="text-gradient">板块</span>
+    </h1>
+    <p class="mb-10 text-sm text-ink-muted">按主题浏览，找起来更快。</p>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      {
+        counts.map((c) => (
+          <a
+            href={`${base}/categories/${c.id}/`}
+            class="card card-hover group flex items-start gap-4 p-6"
+          >
+            <span
+              class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white shadow-md transition-transform duration-300 group-hover:scale-110"
+              style={`background: var(--macaron-${c.color})`}
+            >
+              <Icon name={c.icon} class="h-5 w-5" />
+            </span>
+            <span class="min-w-0">
+              <span class="flex items-center gap-2">
+                <span class="text-lg font-bold text-ink-strong">{c.label}</span>
+                <span class="chip !px-2 !py-0">{c.count} 篇</span>
+              </span>
+              <span class="mt-1 block text-sm text-ink-muted">{c.desc}</span>
+            </span>
+            <Icon
+              name="chevronRight"
+              class="ml-auto mt-2 h-4 w-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-1"
+            />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,28 @@
+# 构建产物
+dist/
+.output/
+.astro/
+
+# 依赖
+node_modules/
+
+# Pagefind 索引（构建时生成）
+public/pagefind/
+src/pagefind/
+
+# 环境变量
+.env
+.env.local
+
+# 日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 编辑器 / 系统
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts, collectTags } from '../../utils/posts';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const tags = collectTags(await getPosts());
+const max = tags[0]?.count || 1;
+---
+
+<BaseLayout title="标签" description="全部文章标签云。">
+  <div class="mx-auto max-w-5xl px-5 py-12">
+    <h1 class="mb-2 text-3xl font-black text-ink-strong sm:text-4xl">
+      <span class="text-gradient">标签</span>
+    </h1>
+    <p class="mb-10 text-sm text-ink-muted">共 {tags.length} 个标签。</p>
+
+    {
+      tags.length > 0 ? (
+        <div class="flex flex-wrap gap-3">
+          {tags.map(({ tag, count }) => (
+            <a
+              href={`${base}/tags/${encodeURIComponent(tag)}/`}
+              class="chip !px-4 !py-2 !text-sm"
+              style={`font-size:${(0.8 + (count / max) * 0.5).toFixed(2)}rem`}
+            >
+              <Icon name="tag" class="h-3.5 w-3.5" />
+              {tag}
+              <span class="text-[11px] opacity-60">{count}</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="card border-dashed bg-transparent p-12 text-center shadow-none">
+          <Icon name="tag" class="mx-auto mb-3 h-8 w-8 text-ink-muted" />
+          <p class="text-sm text-ink-muted">还没有标签，先写篇文章吧。</p>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

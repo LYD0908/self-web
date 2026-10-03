@@ -1,0 +1,123 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../consts';
+---
+
+<section
+  class="relative flex min-h-[100svh] flex-col items-center justify-center px-6 text-center"
+>
+  <!-- 漂浮装饰球 -->
+  <div
+    class="pointer-events-none absolute left-[12%] top-[22%] h-16 w-16 rounded-full opacity-60 blur-[2px] animate-float"
+    style="background: var(--macaron-pink)"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute right-[14%] top-[32%] h-10 w-10 rounded-full opacity-60 animate-float"
+    style="background: var(--macaron-mint); animation-delay: 1.2s"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute bottom-[26%] left-[20%] h-8 w-8 rounded-full opacity-60 animate-float"
+    style="background: var(--macaron-yellow); animation-delay: 2.4s"
+  >
+  </div>
+
+  <div class="relative z-10 flex flex-col items-center gap-7 animate-fade-up">
+    <!-- 头像 -->
+    <div class="relative">
+      <div
+        class="grid h-24 w-24 place-items-center rounded-[1.75rem] text-4xl font-black text-white shadow-xl"
+        style="background: var(--grad-1)"
+      >
+        {SITE.name.slice(0, 1)}
+      </div>
+      <span
+        class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-4"
+        style="background: var(--macaron-mint); border-color: var(--bg)"
+        title="在线"
+      >
+      </span>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
+      <h1
+        class="text-5xl font-black tracking-tight text-gradient sm:text-7xl"
+        style="letter-spacing:-0.02em"
+      >
+        {SITE.name}
+      </h1>
+      <p class="text-base text-ink-muted sm:text-lg">{SITE.slogan}</p>
+    </div>
+
+    <!-- 打字机 -->
+    <div
+      class="flex h-8 items-center justify-center text-lg font-medium sm:text-xl"
+    >
+      <span class="text-ink-muted">我在做 &nbsp;</span>
+      <span id="typing" class="caret text-ink-strong"></span>
+    </div>
+
+    <!-- 进入按钮 -->
+    <button
+      id="enter-btn"
+      class="group mt-2 inline-flex items-center gap-2.5 rounded-full px-8 py-3.5 text-sm font-bold tracking-[0.22em] text-white shadow-lg transition-all duration-300 hover:scale-[1.04] active:scale-95"
+      style="background: var(--grad-1); box-shadow: 0 10px 30px -10px rgb(196 167 247 / .95)"
+    >
+      {SITE.enterText}
+      <Icon
+        name="arrowRight"
+        class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+      />
+    </button>
+  </div>
+
+  <!-- 向下滚动提示 -->
+  <div
+    class="absolute bottom-8 flex flex-col items-center gap-2 text-ink-muted"
+  >
+    <span class="text-[11px] tracking-[0.25em]">SCROLL</span>
+    <Icon name="chevronRight" class="h-4 w-4 rotate-90 animate-bounce" />
+  </div>
+</section>
+
+<script define:vars={{ roles: SITE.typingRoles }}>
+  (function () {
+    const el = document.getElementById('typing');
+    if (!el || !roles || !roles.length) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      el.textContent = roles[0];
+      return;
+    }
+
+    let ri = 0;
+    let ci = 0;
+    let deleting = false;
+
+    function tick() {
+      const word = roles[ri];
+      ci += deleting ? -1 : 1;
+      el.textContent = word.slice(0, ci);
+
+      let delay = deleting ? 45 : 110;
+      if (!deleting && ci === word.length) {
+        delay = 1800;
+        deleting = true;
+      } else if (deleting && ci === 0) {
+        deleting = false;
+        ri = (ri + 1) % roles.length;
+        delay = 400;
+      }
+      setTimeout(tick, delay);
+    }
+    tick();
+
+    const btn = document.getElementById('enter-btn');
+    btn?.addEventListener('click', () => {
+      const next = document.getElementById('main-screen');
+      if (next) next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  })();
+</script>

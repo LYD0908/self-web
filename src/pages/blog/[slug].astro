@@ -1,0 +1,58 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getEntry, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getPosts, readingTime } from '../../utils/posts';
+
+/**
+ * 注意：getStaticPaths 的 props 会被序列化，不能直接传 collection entry
+ * （render() 会丢）。这里只传 id 和上下篇信息，页面内再用 getEntry 取回。
+ */
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.slug },
+    props: {
+      slug: post.slug,
+      prev:
+        i > 0
+          ? { title: posts[i - 1].data.title, url: `/blog/${posts[i - 1].slug}/` }
+          : null,
+      next:
+        i < posts.length - 1
+          ? { title: posts[i + 1].data.title, url: `/blog/${posts[i + 1].slug}/` }
+          : null,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { slug, prev, next } = Astro.props;
+const post = await getEntry('blog', slug);
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+const { Content, headings } = await render(post);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const prevAbs = prev ? { ...prev, url: base + prev.url } : null;
+const nextAbs = next ? { ...next, url: base + next.url } : null;
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  category={post.data.category}
+  tags={post.data.tags}
+  readingTime={readingTime(post.body || '')}
+  headings={headings}
+  cover={post.data.cover}
+  coverColor={post.data.coverColor}
+  prev={prevAbs}
+  next={nextAbs}
+>
+  <Content />
+</PostLayout>

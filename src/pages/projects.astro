@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { PROJECTS } from '../consts';
+---
+
+<BaseLayout title="项目" description="做过的东西，带截图和链接。">
+  <div class="mx-auto max-w-6xl px-5 py-12">
+    <h1 class="mb-2 text-3xl font-black text-ink-strong sm:text-4xl">
+      <span class="text-gradient">项目</span>
+    </h1>
+    <p class="mb-10 text-sm text-ink-muted">
+      在 <code class="rounded bg-surface-2 px-1.5 py-0.5 text-[13px]"
+        >src/consts.ts</code
+      > 的 PROJECTS 数组里维护这份列表。
+    </p>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        PROJECTS.map((p) => (
+          <a
+            href={p.link}
+            target="_blank"
+            rel="noopener"
+            class="card card-hover group flex flex-col p-6"
+          >
+            <div class="mb-4 flex items-start justify-between">
+              <span
+                class="grid h-11 w-11 place-items-center rounded-xl text-white shadow-md transition-transform duration-300 group-hover:scale-110"
+                style={`background: var(--macaron-${p.color})`}
+              >
+                <Icon name="rocket" class="h-5 w-5" />
+              </span>
+              <span class="chip !py-0.5">{p.status}</span>
+            </div>
+
+            <h3 class="flex items-center gap-1.5 text-lg font-bold text-ink-strong">
+              {p.name}
+              <Icon
+                name="external"
+                class="h-3.5 w-3.5 text-ink-muted opacity-0 transition-opacity group-hover:opacity-100"
+              />
+            </h3>
+            <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+              {p.desc}
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              {p.tags.map((t) => (
+                <span class="chip !py-0.5">{t}</span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

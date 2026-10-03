@@ -1,0 +1,68 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { CATEGORIES } from '../../consts';
+import { getPosts, readingTime } from '../../utils/posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return CATEGORIES.map((c) => ({
+    params: { category: c.id },
+    props: {
+      category: c,
+      posts: posts
+        .filter((p) => p.data.category === c.id)
+        .map((p) => ({
+          slug: p.slug,
+          data: p.data,
+          readingTime: readingTime(p.body || ''),
+        })),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category, posts } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={category.label} description={category.desc}>
+  <div class="mx-auto max-w-6xl px-5 py-12">
+    <a
+      href={`${base}/categories/`}
+      class="mb-6 inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink-strong"
+    >
+      <Icon name="arrowLeft" class="h-4 w-4" />
+      全部板块
+    </a>
+
+    <div class="mb-10 flex items-center gap-4">
+      <span
+        class="grid h-14 w-14 place-items-center rounded-2xl text-white shadow-md"
+        style={`background: var(--macaron-${category.color})`}
+      >
+        <Icon name={category.icon} class="h-6 w-6" />
+      </span>
+      <div>
+        <h1 class="text-3xl font-black text-ink-strong">{category.label}</h1>
+        <p class="text-sm text-ink-muted">{category.desc}</p>
+      </div>
+    </div>
+
+    {
+      posts.length > 0 ? (
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {posts.map((p) => (
+            <PostCard post={p} />
+          ))}
+        </div>
+      ) : (
+        <div class="card border-dashed bg-transparent p-12 text-center shadow-none">
+          <Icon name={category.icon} class="mx-auto mb-3 h-8 w-8 text-ink-muted" />
+          <p class="text-sm text-ink-muted">这个板块还没有文章。</p>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

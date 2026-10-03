@@ -1,0 +1,165 @@
+---
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE, NAV_ITEMS } from '../consts';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function isActive(href) {
+  const full = base + href;
+  return path === full || path.startsWith(full + '/');
+}
+---
+
+<header
+  class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+  id="site-header"
+>
+  <div
+    class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5"
+  >
+    <a
+      href={`${base}/`}
+      class="group flex items-center gap-2.5 shrink-0"
+      aria-label="回到首页"
+    >
+      <span
+        class="grid h-9 w-9 place-items-center rounded-xl text-[15px] font-bold text-white shadow-md"
+        style="background: var(--grad-1)"
+      >
+        {SITE.name.slice(0, 1)}
+      </span>
+      <span class="flex flex-col leading-none">
+        <span class="text-[15px] font-bold text-ink-strong">{SITE.name}</span>
+        <span class="text-[10px] tracking-[0.18em] text-ink-muted uppercase"
+          >{SITE.handle}</span
+        >
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-1 md:flex" aria-label="主导航">
+      {
+        NAV_ITEMS.map((item) => (
+          <a
+            href={`${base}${item.href}`}
+            class:list={[
+              'relative rounded-full px-3.5 py-1.5 text-sm transition-colors',
+              isActive(item.href)
+                ? 'text-ink-strong font-medium'
+                : 'text-ink-muted hover:text-ink-strong',
+            ]}
+          >
+            {isActive(item.href) && (
+              <span
+                class="absolute inset-0 -z-10 rounded-full"
+                style="background: var(--macaron-purple-soft); opacity:.7"
+              ></span>
+            )}
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-1.5">
+      <a
+        href={`${base}/search`}
+        class="btn !px-2.5 !py-2.5"
+        aria-label="搜索文章"
+        title="搜索文章"
+      >
+        <Icon name="search" class="h-[18px] w-[18px]" />
+      </a>
+      <a
+        href={`${base}/rss.xml`}
+        class="btn !px-2.5 !py-2.5 hidden sm:inline-flex"
+        aria-label="RSS 订阅"
+        title="RSS 订阅"
+      >
+        <Icon name="rss" class="h-[18px] w-[18px]" />
+      </a>
+      <ThemeToggle />
+      <button
+        id="menu-btn"
+        class="btn !px-2.5 !py-2.5 md:hidden"
+        aria-label="打开菜单"
+        aria-expanded="false"
+      >
+        <Icon name="menu" class="h-[18px] w-[18px]" />
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端下拉菜单 -->
+  <div
+    id="mobile-menu"
+    class="mx-3 mt-1 hidden overflow-hidden rounded-2xl border border-line bg-surface/95 backdrop-blur-xl shadow-xl md:hidden"
+  >
+    <nav class="flex flex-col p-2">
+      {
+        NAV_ITEMS.map((item) => (
+          <a
+            href={`${base}${item.href}`}
+            class:list={[
+              'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors',
+              isActive(item.href)
+                ? 'bg-surface-2 text-ink-strong font-medium'
+                : 'text-ink-muted hover:bg-surface-2 hover:text-ink-strong',
+            ]}
+          >
+            <Icon name={item.icon} class="h-4 w-4" />
+            <span>
+              <span class="block">{item.label}</span>
+              <span class="block text-[11px] text-ink-muted">{item.desc}</span>
+            </span>
+          </a>
+        ))
+      }
+      <a
+        href={`${base}/search`}
+        class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-muted hover:bg-surface-2 hover:text-ink-strong"
+      >
+        <Icon name="search" class="h-4 w-4" />
+        搜索文章
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  (function () {
+    const header = document.getElementById('site-header');
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+
+    // 滚动时给 header 加毛玻璃底
+    const onScroll = () => {
+      const scrolled = window.scrollY > 12;
+      header?.classList.toggle(
+        'border-b',
+        scrolled
+      );
+      header?.classList.toggle(
+        'bg-bg/80',
+        scrolled
+      );
+      header?.classList.toggle('backdrop-blur-xl', scrolled);
+      header?.classList.toggle('shadow-sm', scrolled);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    btn?.addEventListener('click', () => {
+      const open = menu?.classList.toggle('hidden') === false;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    menu?.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t instanceof HTMLAnchorElement) {
+        menu.classList.add('hidden');
+        btn?.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
